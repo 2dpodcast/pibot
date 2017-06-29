@@ -1,2 +1,4 @@
 .DS_Store
 .vscode
+server.config.json
+node_modules
