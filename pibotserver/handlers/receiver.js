@@ -1,4 +1,5 @@
 var Transmitter = require("./transmitter");
+var Launcher = require("../utilities/launcher");
 
 var self = {
     receivedMessage: function (event) {
@@ -10,7 +11,7 @@ var self = {
         var messageId = message.mid;
         var messageText = String(message.text).toLowerCase();
         var messageAttachments = message.attachments;
-
+        var action = null;
         if (messageText) {
             // If we receive a text message, check to see if it matches a keyword
             // and send back the example. Otherwise, just echo the text we received.
@@ -19,8 +20,21 @@ var self = {
                     Transmitter.sendOptions(senderID);
                     break;
 
+                case "launch mirror":
+                    action = Launcher.MagicMirror(/*launch*/ true);
+                    break;
+
+                case "kill mirror":
+                    action = Launcher.MagicMirror(/*launch*/ false);
+                    break;
+
                 default:
                     Transmitter.sendTextMessage(senderID, messageText);
+            }
+
+            if (action != null) {
+                var responseMessage = messageText + ": " + (action ? "Success" : "Failed!");
+                Transmitter.sendTextMessage(senderID, responseMessage);
             }
         } else if (messageAttachments) {
             Transmitter.sendTextMessage(senderID, "I don't know what to do with this attachment! :(");
