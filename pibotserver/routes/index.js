@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-var config = require("../server.config.json");
+var Config = require("../server.config.json");
 var handler = require("../handlers/receiver");
 
 /* GET home page. */
@@ -10,7 +10,7 @@ router.get('/', function (req, res, next) {
 
 router.get('/webhook', function (req, res) {
     if (req.query['hub.mode'] === 'subscribe'
-        && req.query['hub.verify_token'] === config.Tokens.WebhookVerify) {
+        && req.query['hub.verify_token'] === Config.Tokens.WebhookVerify) {
         console.log("Validating webhook");
         res.status(200).send(req.query['hub.challenge']);
     } else {

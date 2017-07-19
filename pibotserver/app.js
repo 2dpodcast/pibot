@@ -5,7 +5,12 @@ var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 
 var index = require("./routes/index");
+var Config = require("./server.config.json");
+
 var app = express();
+app.listen(Config.Port || 3000, function() {
+    console.log("Listening on: " + (Config.Port || 3000));
+});
 
 app.use(logger("dev"));
 app.use(bodyParser.json());

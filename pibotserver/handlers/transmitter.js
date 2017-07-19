@@ -1,8 +1,8 @@
 var request = require('request');
-var config = require("../server.config.json");
+var Config = require("../server.config.json");
 var PiBotPageOptions = {
     uri: 'https://graph.facebook.com/v2.6/me/messages',
-    qs: { access_token: config.Tokens.PiBotPage },
+    qs: { access_token: Config.Tokens.PiBotPage },
     method: 'POST',
     json: null
 };

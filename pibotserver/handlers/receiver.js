@@ -28,13 +28,24 @@ var self = {
                     action = Launcher.MagicMirror(/*launch*/ false);
                     break;
 
+                case "screen off":
+                    action = Launcher.Screen(/*turnOn*/ false);
+                    break;
+
+                case "screen on":
+                    action = Launcher.Screen(/*turnOn*/ true);
+                    break;
+
+                case "game over":
+                    action = Launcher.GameOver();
+                    break;
+
                 default:
                     Transmitter.sendTextMessage(senderID, messageText);
             }
 
             if (action != null) {
-                var responseMessage = messageText + ": " + (action ? "Success" : "Failed!");
-                Transmitter.sendTextMessage(senderID, responseMessage);
+                Transmitter.sendTextMessage(senderID, action.message);
             }
         } else if (messageAttachments) {
             Transmitter.sendTextMessage(senderID, "I don't know what to do with this attachment! :(");
