@@ -1,6 +1,18 @@
-var cp = require("child_process");
 
-var child = cp.spawn("ls", ["-lrt"]);
-var child = cp.spawn("npm", ["start"], {
-    cwd: "/home/pi/Codebase/MagicMirror/"
-});
+module.exports = {
+    Messages: {
+        LaunchMirror: "LaunchMirror",
+        KillMirror: "KillMirror",
+        Help: "Help",
+        ScreenOn: "ScreenOn",
+        ScreenOff: "ScreenOff",
+        Shutdown: "Shutdown",
+        Youtube: "Youtube",
+        Browse: "Browse",
+        BrowserKill: "BrowserKill",
+        Default: "Default"
+    },
+
+    MagicMirror: "MagicMirror",
+    Epiphany: "Epiphany"
+}

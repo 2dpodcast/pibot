@@ -1,0 +1,13 @@
+#System files
+.DS_Store
+.vscode
+
+#libraries
+node_modules
+npm-debug.log
+
+#Ignore Config
+server.config.json
+
+../._.DS_Store
+._.DS_Store

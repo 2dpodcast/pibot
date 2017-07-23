@@ -1,9 +1,9 @@
 var spawn = require("child_process").spawn;
 var Config = require("../server.config.json");
 var Killer = require("./killer");
+var Constants = require("./constants");
 
 var ProcessObjects = {};
-const MagicMirror = "MagicMirror";
 
 module.exports = {
     MagicMirror: function (launch) {
@@ -13,14 +13,14 @@ module.exports = {
         };
 
         if (launch) {
-            if (ProcessObjects[MagicMirror] == null) {
+            if (ProcessObjects[Constants.MagicMirror] == null) {
                 try {
                     var child = spawn("npm", ["start"], {
                         cwd: Config.ProjectPaths.MagicMirror,
                         detached: true
                     });
 
-                    ProcessObjects[MagicMirror] = child;
+                    ProcessObjects[Constants.MagicMirror] = child;
                     console.log("MagicMirror launched!");
 
                     result.message = "Launching MagicMirror!";
@@ -38,17 +38,17 @@ module.exports = {
             }
         } else {
             // Kill MagicMirror process
-            if (ProcessObjects[MagicMirror] == null) {
+            if (ProcessObjects[Constants.MagicMirror] == null) {
                 console.log("MagicMirror is not running!");
 
                 result.message = "Nothing to kill here.. move on!";
                 result.success = false;
             } else {
                 try {
-                    var childProc = ProcessObjects[MagicMirror];
+                    var childProc = ProcessObjects[Constants.MagicMirror];
                     Killer.kill(childProc.pid);
 
-                    ProcessObjects[MagicMirror] = null;
+                    ProcessObjects[Constants.MagicMirror] = null;
                     console.log("Killed mirror!");
 
                     result.message = "MagicMirror is dead! RIP Mirror!";
@@ -65,7 +65,7 @@ module.exports = {
         return result;
     },
 
-    Screen: function(turnon) {
+    Screen: function (turnon) {
         var onOrOff = turnon ? "on" : "off"
         spawn("xset", ["dpms", "force", onOrOff]);
         return {
@@ -74,10 +74,56 @@ module.exports = {
         };
     },
 
-    GameOver: function() {
+    Shutdown: function () {
         spawn("sudo", ["shutdown", "now"]);
         return {
             message: "Goodbye world!",
+            success: true
+        }
+    },
+
+    Help: function () {
+        return {
+            message: Constants.Messages.Help,
+            success: true
+        }
+    },
+
+    Browse: function (launch, url) {
+        if (launch) {
+            var child = spawn("epiphany", [url], {
+                detached: true
+            });
+
+            if (ProcessObjects[Constants.Epiphany] == null) {
+                ProcessObjects[Constants.Epiphany] = [child];
+            } else {
+                ProcessObjects[Constants.Epiphany].push(child);
+            }
+
+            return {
+                message: "Launching Epiphany!",
+                success: true
+            }
+        } else {
+            ProcessObjects[Constants.Epiphany].forEach(function (child) {
+                Killer.kill(child.pid);
+            }, this);
+
+            return {
+                message: "Killing all browsers",
+                success: true
+            }
+        }
+    },
+
+    Youtube: function (url) {
+        spawn("epihphany ")
+    },
+
+    Default: function (messageText) {
+        return {
+            message: messageText,
             success: true
         }
     }

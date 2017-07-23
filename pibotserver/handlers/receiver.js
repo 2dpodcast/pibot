@@ -1,5 +1,7 @@
 var Transmitter = require("./transmitter");
 var Launcher = require("../utilities/launcher");
+var Analyzer = require("../utilities/analyzer");
+var Constants = require("../utilities/constants");
 
 var self = {
     receivedMessage: function (event) {
@@ -8,44 +10,55 @@ var self = {
         var timeOfMessage = new Date(event.timestamp);
         var message = event.message;
 
+        var messageText = message.text;
         var messageId = message.mid;
-        var messageText = String(message.text).toLowerCase();
         var messageAttachments = message.attachments;
-        var action = null;
+        var response = null;
         if (messageText) {
             // If we receive a text message, check to see if it matches a keyword
             // and send back the example. Otherwise, just echo the text we received.
-            switch (messageText) {
-                case "options":
-                    Transmitter.sendOptions(senderID);
+            var analysis = Analyzer.analyze(messageText);
+            switch (analysis.action) {
+                case Constants.Messages.Help:
+                    response = Launcher.Help();
                     break;
 
-                case "launch mirror":
-                    action = Launcher.MagicMirror(/*launch*/ true);
+                case Constants.Messages.LaunchMirror:
+                    response = Launcher.MagicMirror(/*launch*/ true);
                     break;
 
-                case "kill mirror":
-                    action = Launcher.MagicMirror(/*launch*/ false);
+                case Constants.Messages.KillMirror:
+                    response = Launcher.MagicMirror(/*launch*/ false);
                     break;
 
-                case "screen off":
-                    action = Launcher.Screen(/*turnOn*/ false);
+                case Constants.Messages.ScreenOff:
+                    response = Launcher.Screen(/*turnOn*/ false);
                     break;
 
-                case "screen on":
-                    action = Launcher.Screen(/*turnOn*/ true);
+                case Constants.Messages.ScreenOn:
+                    response = Launcher.Screen(/*turnOn*/ true);
                     break;
 
-                case "game over":
-                    action = Launcher.GameOver();
+                case Constants.Messages.Shutdown:
+                    response = Launcher.Shutdown();
+                    break;
+
+                case Constants.Messages.Browse:
+                    response = Launcher.Browse(/*luanch*/ true, analysis.url);
+                    break;
+
+                case Constants.Messages.BrowserKill:
+                    response = Launcher.Browse(/*launch*/ false, null);
                     break;
 
                 default:
-                    Transmitter.sendTextMessage(senderID, messageText);
+                    response = Launcher.Default(messageText);
             }
 
-            if (action != null) {
-                Transmitter.sendTextMessage(senderID, action.message);
+            if (response != null && response.message != Constants.Messages.Help) {
+                Transmitter.sendTextMessage(senderID, response.message);
+            } else {
+                Transmitter.sendOptions(senderID);
             }
         } else if (messageAttachments) {
             Transmitter.sendTextMessage(senderID, "I don't know what to do with this attachment! :(");

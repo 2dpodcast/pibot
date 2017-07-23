@@ -8,7 +8,7 @@ var index = require("./routes/index");
 var Config = require("./server.config.json");
 
 var app = express();
-app.listen(Config.Port || 3000, function() {
+app.listen(Config.Port || 3000, function () {
     console.log("Listening on: " + (Config.Port || 3000));
 });
 
@@ -28,13 +28,9 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get("env") === "development" ? err : {};
-
     // render the error page
+    console.log(err);
     res.status(err.status || 500);
-    res.render("error");
 });
 
 module.exports = app;
